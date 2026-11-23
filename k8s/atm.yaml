@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atm
+  labels:
+    app: atm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: atm
+  template:
+    metadata:
+      labels:
+        app: atm
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: atm
+          image: ghcr.io/OWNER/REPOSITORY:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: atm
+spec:
+  type: NodePort
+  selector:
+    app: atm
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: 30080

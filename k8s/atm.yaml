@@ -5,7 +5,7 @@ metadata:
   labels:
     app: atm
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: atm
@@ -18,7 +18,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: atm
-          image: ghcr.io/OWNER/REPOSITORY:latest
+          image: jithendragurram/atm:latest
           imagePullPolicy: Always
           ports:
             - name: http
